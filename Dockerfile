@@ -4,9 +4,12 @@ FROM eclipse-temurin:17-jdk-focal
 # Establece el directorio de trabajo dentro del contenedor.
 WORKDIR /app
 
-# Copia los archivos del proyecto a la imagen. La .mvnw y el pom.xml son necesarios para construir.
+# Copia los archivos necesarios para el build.
 COPY .mvn .mvn
 COPY mvnw pom.xml ./
+
+# AÑADE ESTA LÍNEA para dar permisos de ejecución al script mvnw
+RUN chmod +x ./mvnw
 
 # Descarga las dependencias de Maven. Esto se hace en un paso separado para optimizar la caché de Docker.
 RUN ./mvnw dependency:go-offline
