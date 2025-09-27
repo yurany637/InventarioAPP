@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**").permitAll() // Permite acceso público a las URLs de autenticación
                         .requestMatchers("/actuator/health").permitAll() // Para health checks de Render
+                        .requestMatchers("/api/**").permitAll() // ← LÍNEA NUEVA: Permite acceso a todos los endpoints de la API
                         .anyRequest().authenticated() // Requiere autenticación para cualquier otra petición
                 );
         return http.build();
