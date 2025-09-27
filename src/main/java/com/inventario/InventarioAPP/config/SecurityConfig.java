@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**").permitAll() // Permite acceso público a las URLs de autenticación
                         .requestMatchers("/actuator/health").permitAll() // Para health checks de Render
-                        .requestMatchers("/api/**").permitAll() // ← LÍNEA NUEVA: Permite acceso a todos los endpoints de la API
+                        .requestMatchers("/api/**").permitAll() // Permite acceso a todos los endpoints de la API
                         .anyRequest().authenticated() // Requiere autenticación para cualquier otra petición
                 );
         return http.build();
@@ -39,15 +39,26 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // ✅ AÑADIR TU DOMINIO DE RENDER
+
+        // ✅ ACTUALIZADO: Permitir tanto localhost como tu dominio de Render
         configuration.setAllowedOriginPatterns(Arrays.asList(
-                "https://inventario-frontend-l0sb.onrender.com",
-                "http://localhost:8081",
-                "*" // Para desarrollo
+                "https://inventario-frontend-l0sb.onrender.com", // Tu frontend en Render
+                "http://localhost:8081", // Para desarrollo local
+                "http://localhost:8080", // Para desarrollo local del backend
+                "https://*.onrender.com", // Cualquier subdominio de Render
+                "*" // Para desarrollo (remover en producción si quieres más seguridad)
         ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // ✅ ACTUALIZADO: Incluir todos los métodos HTTP necesarios
+        configuration.setAllowedMethods(Arrays.asList(
+                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
+        ));
+
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
+
+        // ✅ NUEVO: Permitir que el navegador cache las opciones preflight
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/productos")
-@CrossOrigin(origins = "*") // Permitir todos los orígenes por ahora
+@CrossOrigin(origins = "*") // Permite todos los orígenes para desarrollo/producción
 public class ProductoController {
 
     @Autowired
