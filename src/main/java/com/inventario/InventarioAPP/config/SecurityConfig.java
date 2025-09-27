@@ -39,8 +39,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Permite orígenes específicos o todos en desarrollo
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        // ✅ AÑADIR TU DOMINIO DE RENDER
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "https://inventario-frontend-l0sb.onrender.com",
+                "http://localhost:8081",
+                "*" // Para desarrollo
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

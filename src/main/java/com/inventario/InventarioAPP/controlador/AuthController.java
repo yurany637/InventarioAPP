@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:8081") // Asegúrate de que coincida con la URL de tu frontend
+@CrossOrigin(origins = "*") // Asegúrate de que coincida con la URL de tu frontend
 public class AuthController {
 
     @Autowired
