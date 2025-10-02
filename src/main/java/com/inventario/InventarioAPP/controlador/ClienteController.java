@@ -5,6 +5,7 @@ import com.inventario.InventarioAPP.repositorio.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,12 +28,12 @@ public class ClienteController {
     }
 
     @PostMapping
-    public Cliente crearCliente(@RequestBody Cliente cliente) {
+    public Cliente crearCliente(@Valid @RequestBody Cliente cliente) {
         return clienteRepository.save(cliente);
     }
 
     @PutMapping("/{id}")
-    public Cliente actualizarCliente(@PathVariable Long id, @RequestBody Cliente clienteActualizado) {
+    public Cliente actualizarCliente(@PathVariable Long id, @Valid @RequestBody Cliente clienteActualizado) {
         return clienteRepository.findById(id)
                 .map(cliente -> {
                     cliente.setNombre(clienteActualizado.getNombre());
