@@ -5,6 +5,7 @@ import com.inventario.InventarioAPP.repositorio.ProveedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,12 +28,12 @@ public class ProveedorController {
     }
 
     @PostMapping
-    public Proveedor crearProveedor(@RequestBody Proveedor proveedor) {
+    public Proveedor crearProveedor(@Valid @RequestBody Proveedor proveedor) {
         return proveedorRepository.save(proveedor);
     }
 
     @PutMapping("/{id}")
-    public Proveedor actualizarProveedor(@PathVariable Long id, @RequestBody Proveedor proveedorActualizado) {
+    public Proveedor actualizarProveedor(@PathVariable Long id, @Valid @RequestBody Proveedor proveedorActualizado) {
         return proveedorRepository.findById(id)
                 .map(proveedor -> {
                     proveedor.setNombre(proveedorActualizado.getNombre());
