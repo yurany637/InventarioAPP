@@ -19,12 +19,17 @@ public class Cliente {
     private String nombre;
 
     @NotBlank(message = "La dirección no puede estar vacía")
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z0-9\\s#.,-]+$",
-            message = "La dirección debe contener letras y números")
+    @Size(min = 5, message = "La dirección debe tener mínimo 5 caracteres")
+    @Pattern(
+            regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z0-9\\s#.,-]+$",
+            message = "La dirección debe contener letras y números"
+    )
     private String direccion;
 
     @NotBlank(message = "El contacto no puede estar vacío")
-    @Pattern(regexp = "^[0-9]{7,15}$",
-            message = "El contacto debe contener solo números y tener entre 7 y 15 dígitos")
+    @Pattern(
+            regexp = "^[0-9]{7,15}$",
+            message = "El contacto debe contener solo números y tener entre 7 y 15 dígitos"
+    )
     private String contacto;
 }
