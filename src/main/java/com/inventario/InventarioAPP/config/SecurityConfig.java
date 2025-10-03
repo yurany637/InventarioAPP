@@ -12,6 +12,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -28,10 +29,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Deshabilita CSRF para la API REST
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Habilita CORS
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**").permitAll() // Permite acceso público a las URLs de autenticación
-                        .requestMatchers("/actuator/health").permitAll() // Para health checks de Render
-                        .requestMatchers("/api/**").permitAll() // Permite acceso a todos los endpoints de la API
-                        .anyRequest().authenticated() // Requiere autenticación para cualquier otra petición
+                        // ✅ IMPORTANTE: Permitir TODOS los endpoints de autenticación
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/api/**").permitAll()
+                        .anyRequest().authenticated()
                 );
         return http.build();
     }
@@ -40,24 +42,26 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // ✅ ACTUALIZADO: Permitir tanto localhost como tu dominio de Render
-        configuration.setAllowedOriginPatterns(Arrays.asList(
-                "https://inventario-frontend-l0sb.onrender.com", // Tu frontend en Render
-                "http://localhost:8081", // Para desarrollo local
-                "http://localhost:8080", // Para desarrollo local del backend
-                "https://*.onrender.com", // Cualquier subdominio de Render
-                "*" // Para desarrollo (remover en producción si quieres más seguridad)
-        ));
+        // Permitir todos los orígenes (para desarrollo)
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
 
-        // ✅ ACTUALIZADO: Incluir todos los métodos HTTP necesarios
+        // Permitir todos los métodos HTTP
         configuration.setAllowedMethods(Arrays.asList(
-                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
+                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"
         ));
 
+        // Permitir todos los headers
         configuration.setAllowedHeaders(Arrays.asList("*"));
+
+        // Permitir credenciales
         configuration.setAllowCredentials(true);
 
-        // ✅ NUEVO: Permitir que el navegador cache las opciones preflight
+        // Headers expuestos
+        configuration.setExposedHeaders(Arrays.asList(
+                "Authorization", "Content-Type", "X-Requested-With", "Accept"
+        ));
+
+        // Cache de preflight
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
