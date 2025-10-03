@@ -7,9 +7,12 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "usuarios", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "nombreUsuario") // evita duplicados
-})
+@Table(
+        name = "usuarios",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "username") // ✅ igual al nombre real de la columna en BD
+        }
+)
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,15 +20,11 @@ public class Usuario {
 
     @NotBlank(message = "El nombre de usuario es obligatorio")
     @Size(min = 3, max = 50, message = "El nombre de usuario debe tener entre 3 y 50 caracteres")
-    @Column(nullable = false, unique = true, length = 50)
-    private String nombreUsuario;
+    @Column(name = "username", nullable = false, unique = true, length = 50)
+    private String username;
 
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 4, message = "La contraseña debe tener mínimo 4 caracteres")
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
-
-    @NotBlank(message = "El rol es obligatorio")
-    @Column(nullable = false, length = 20)
-    private String rol; // Ejemplo: ADMIN o USER
 }
