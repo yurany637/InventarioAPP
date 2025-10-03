@@ -12,7 +12,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -26,15 +25,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Deshabilita CSRF para la API REST
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Habilita CORS
+                .csrf(csrf -> csrf.disable()) // ✅ Deshabilita CSRF
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Habilita CORS
                 .authorizeHttpRequests(authorize -> authorize
-                        // ✅ IMPORTANTE: Permitir TODOS los endpoints de autenticación
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/api/**").permitAll()
-                        .anyRequest().authenticated()
-                );
+                        .requestMatchers("/**").permitAll() // ✅ PERMITIR TODO (sin autenticación)
+                )
+                .formLogin(form -> form.disable()) // ✅ Deshabilitar formulario de login de Spring
+                .httpBasic(basic -> basic.disable()); // ✅ Deshabilitar autenticación básica HTTP
+
         return http.build();
     }
 
@@ -42,7 +40,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Permitir todos los orígenes (para desarrollo)
+        // Permitir todos los orígenes
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
 
         // Permitir todos los métodos HTTP
