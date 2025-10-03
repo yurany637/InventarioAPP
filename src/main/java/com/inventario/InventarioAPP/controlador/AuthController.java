@@ -22,7 +22,7 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // ✅ LOGIN MEJORADO con validaciones
+    // ✅ LOGIN con LOGS detallados para debugging
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> credenciales) {
         Map<String, String> response = new HashMap<>();
@@ -30,13 +30,20 @@ public class AuthController {
         String username = credenciales.get("username");
         String password = credenciales.get("password");
 
+        System.out.println("========================================");
+        System.out.println("🔐 Intento de login");
+        System.out.println("Usuario recibido: " + username);
+        System.out.println("Password recibido: " + password);
+
         // Validar que los campos no estén vacíos
         if (username == null || username.trim().isEmpty()) {
+            System.out.println("❌ Error: Username vacío");
             response.put("error", "El nombre de usuario es requerido");
             return ResponseEntity.badRequest().body(response);
         }
 
         if (password == null || password.trim().isEmpty()) {
+            System.out.println("❌ Error: Password vacío");
             response.put("error", "La contraseña es requerida");
             return ResponseEntity.badRequest().body(response);
         }
@@ -45,26 +52,46 @@ public class AuthController {
         Usuario usuario = usuarioRepository.findByUsername(username.trim());
 
         if (usuario == null) {
+            System.out.println("❌ Usuario NO encontrado en la base de datos");
             response.put("error", "Usuario no encontrado");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
+        System.out.println("✅ Usuario encontrado en BD");
+        System.out.println("Username en BD: " + usuario.getUsername());
+        System.out.println("Password Hash en BD: " + usuario.getPassword());
+
+        // Generar hash de la password recibida para comparar
+        String hashPasswordRecibida = passwordEncoder.encode(password);
+        System.out.println("Hash de password recibida: " + hashPasswordRecibida);
+
         // Verificar contraseña
-        if (!passwordEncoder.matches(password, usuario.getPassword())) {
+        boolean passwordMatch = passwordEncoder.matches(password, usuario.getPassword());
+        System.out.println("¿Passwords coinciden?: " + passwordMatch);
+
+        if (!passwordMatch) {
+            System.out.println("❌ Contraseña incorrecta");
+            System.out.println("========================================");
             response.put("error", "Contraseña incorrecta");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
         // Login exitoso
+        System.out.println("✅ Login EXITOSO");
+        System.out.println("========================================");
         response.put("mensaje", "Login exitoso");
         response.put("username", usuario.getUsername());
         return ResponseEntity.ok(response);
     }
 
-    // ✅ REGISTRO MEJORADO con validaciones
+    // ✅ REGISTRO con validaciones
     @PostMapping("/registrar")
     public ResponseEntity<Map<String, String>> registrarUsuario(@RequestBody Usuario usuario) {
         Map<String, String> response = new HashMap<>();
+
+        System.out.println("========================================");
+        System.out.println("📝 Intento de registro");
+        System.out.println("Usuario: " + usuario.getUsername());
 
         // Validar campos
         if (usuario.getUsername() == null || usuario.getUsername().trim().isEmpty()) {
@@ -89,14 +116,20 @@ public class AuthController {
 
         // Verificar si el usuario ya existe
         if (usuarioRepository.findByUsername(usuario.getUsername().trim()) != null) {
+            System.out.println("❌ Usuario ya existe");
             response.put("error", "El usuario ya existe");
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         }
 
         // Crear nuevo usuario
         usuario.setUsername(usuario.getUsername().trim());
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        String passwordEncriptada = passwordEncoder.encode(usuario.getPassword());
+        usuario.setPassword(passwordEncriptada);
         usuarioRepository.save(usuario);
+
+        System.out.println("✅ Usuario registrado exitosamente");
+        System.out.println("Password Hash: " + passwordEncriptada);
+        System.out.println("========================================");
 
         response.put("mensaje", "Usuario registrado con éxito");
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
