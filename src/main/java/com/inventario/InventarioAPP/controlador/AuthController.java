@@ -23,10 +23,10 @@ public class AuthController {
     // ✅ LOGIN
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody Map<String, String> credenciales) {
-        String nombreUsuario = credenciales.get("nombreUsuario");
+        String username = credenciales.get("username"); // cambiado
         String password = credenciales.get("password");
 
-        Usuario usuario = usuarioRepository.findByNombreUsuario(nombreUsuario);
+        Usuario usuario = usuarioRepository.findByUsername(username); // cambiado
 
         if (usuario != null && passwordEncoder.matches(password, usuario.getPassword())) {
             return Collections.singletonMap("mensaje", "Login exitoso");
@@ -38,12 +38,11 @@ public class AuthController {
     // ✅ REGISTRO
     @PostMapping("/registrar")
     public Map<String, String> registrarUsuario(@RequestBody Usuario usuario) {
-        if (usuarioRepository.findByNombreUsuario(usuario.getNombreUsuario()) != null) {
+        if (usuarioRepository.findByUsername(usuario.getUsername()) != null) { // cambiado
             return Collections.singletonMap("error", "El usuario ya existe");
         }
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        usuario.setRol("USER");
-        usuarioRepository.save(usuario);
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword())); // encode de la contraseña
+        usuarioRepository.save(usuario); // no más rol
         return Collections.singletonMap("mensaje", "Usuario registrado con éxito");
     }
 }
