@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*") // Asegúrate de que coincida con la URL de tu frontend
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     @Autowired
@@ -20,6 +20,7 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // ✅ LOGIN
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody Map<String, String> credenciales) {
         String nombreUsuario = credenciales.get("nombreUsuario");
@@ -28,18 +29,21 @@ public class AuthController {
         Usuario usuario = usuarioRepository.findByNombreUsuario(nombreUsuario);
 
         if (usuario != null && passwordEncoder.matches(password, usuario.getPassword())) {
-            // En un proyecto real, aquí se generaría y retornaría un token JWT
             return Collections.singletonMap("mensaje", "Login exitoso");
         } else {
-            return Collections.singletonMap("error", "Credenciales inválidas");
+            return Collections.singletonMap("error", "Usuario o contraseña inválidos");
         }
     }
 
+    // ✅ REGISTRO
     @PostMapping("/registrar")
-    public Usuario registrarUsuario(@RequestBody Usuario usuario) {
-        // Encripta la contraseña antes de guardarla
+    public Map<String, String> registrarUsuario(@RequestBody Usuario usuario) {
+        if (usuarioRepository.findByNombreUsuario(usuario.getNombreUsuario()) != null) {
+            return Collections.singletonMap("error", "El usuario ya existe");
+        }
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        usuario.setRol("USER"); // Asigna un rol predeterminado
-        return usuarioRepository.save(usuario);
+        usuario.setRol("USER");
+        usuarioRepository.save(usuario);
+        return Collections.singletonMap("mensaje", "Usuario registrado con éxito");
     }
 }
