@@ -19,23 +19,21 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // Verificar si ya existe el usuario admin
-        if (usuarioRepository.findByNombreUsuario("admin") == null) {
+        if (usuarioRepository.findByUsername("admin") == null) {
             Usuario admin = new Usuario();
-            admin.setNombreUsuario("admin");
-            admin.setPassword(passwordEncoder.encode("1234")); // Contraseña encriptada
-            admin.setRol("ADMIN");
+            admin.setUsername("admin"); // ✅ corregido
+            admin.setPassword(passwordEncoder.encode("123")); // ✅ contraseña encriptada
             usuarioRepository.save(admin);
             System.out.println("✅ Usuario administrador creado:");
             System.out.println("   Usuario: admin");
-            System.out.println("   Contraseña: 1234");
+            System.out.println("   Contraseña: 123");
         }
 
         // Crear un usuario normal de ejemplo
-        if (usuarioRepository.findByNombreUsuario("usuario1") == null) {
+        if (usuarioRepository.findByUsername("usuario1") == null) {
             Usuario user = new Usuario();
-            user.setNombreUsuario("usuario1");
-            user.setPassword(passwordEncoder.encode("pass123")); // Contraseña encriptada
-            user.setRol("USER");
+            user.setUsername("usuario1"); // ✅ corregido
+            user.setPassword(passwordEncoder.encode("pass123")); // ✅ contraseña encriptada
             usuarioRepository.save(user);
             System.out.println("✅ Usuario normal creado:");
             System.out.println("   Usuario: usuario1");
