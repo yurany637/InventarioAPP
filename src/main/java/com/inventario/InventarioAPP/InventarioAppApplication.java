@@ -12,10 +12,4 @@ public class InventarioAppApplication {
     public static void main(String[] args) {
         SpringApplication.run(InventarioAppApplication.class, args);
     }
-
-    // ✅ Bean para encriptar contraseñas
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-}
+ }
